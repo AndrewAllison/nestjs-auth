@@ -17,7 +17,7 @@ services:
   postgres:
     image: "postgres"
     ports:
-      - "5436:5431"
+      - "5432:5432"
     env_file:
       - .env.postgres # configure postgres
     volumes:

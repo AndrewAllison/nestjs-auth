@@ -1,0 +1,23 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["orderByRelation", "orderByAggregateGroup", "selectRelationCount", "filterJson"]
+}
+
+model User {
+  id              String          @id @default(uuid())
+  firstName       String
+  lastName        String
+  displayName     String
+  email           String          @unique
+  /// @HideField()
+  password        String?
+  mobileNumber    String?
+
+  createdAt       DateTime        @default(now())
+  modifiedAt      DateTime        @default(now())
+}
