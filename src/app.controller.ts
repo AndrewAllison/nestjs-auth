@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { RealIP } from 'nestjs-real-ip';
 
 @Controller()
@@ -14,7 +14,7 @@ export class AppController {
   }
 
   @Get('/favicon.ico')
-  getFavIcon(@Res() res) {
+  getFavIcon() {
     return HttpStatus.OK;
   }
 }

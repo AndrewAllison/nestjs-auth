@@ -2,8 +2,8 @@ import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { EnvConfig } from './config/models/env.config';
-import { LogService } from './log/log.service';
+import { EnvConfig } from './core/config/models/env.config';
+import { LogService } from './core/log/log.service';
 
 let port;
 let env;

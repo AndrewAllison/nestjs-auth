@@ -7,6 +7,7 @@
   "license": "GNU GPLv3",
   "scripts": {
     "prebuild": "rimraf dist",
+    "prepare": "husky install",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -52,6 +53,7 @@
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^7.0.1",
     "jest": "27.0.6",
     "prettier": "^2.3.2",
     "prisma": "^2.29.1",
