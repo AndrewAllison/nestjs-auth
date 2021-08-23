@@ -1,6 +1,8 @@
 import { Controller, Get, HttpStatus } from '@nestjs/common';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { RealIP } from 'nestjs-real-ip';
 
+@ApiTags('App')
 @Controller()
 export class AppController {
   @Get('')
@@ -13,6 +15,7 @@ export class AppController {
     };
   }
 
+  @ApiExcludeEndpoint()
   @Get('/favicon.ico')
   getFavIcon() {
     return HttpStatus.OK;

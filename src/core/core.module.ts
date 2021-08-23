@@ -5,5 +5,6 @@ import { DataModule } from './data/data.module';
 
 @Module({
   imports: [ConfigModule, LogModule, DataModule],
+  exports: [DataModule, LogModule, ConfigModule],
 })
 export class CoreModule {}
