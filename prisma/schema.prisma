@@ -18,6 +18,22 @@ model User {
   password        String?
   mobileNumber    String?
 
+  providers       Provider[]
+
   createdAt       DateTime        @default(now())
   modifiedAt      DateTime        @default(now())
+}
+
+model Provider {
+  id         String   @id @default(uuid())
+  email      String
+  provider   String
+  token      String?  @default(uuid())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+
+
+  createdAt  DateTime @default(now())
+  modifiedAt DateTime @default(now())
 }
