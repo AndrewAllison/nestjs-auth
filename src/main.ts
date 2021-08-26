@@ -10,17 +10,30 @@ import {
   SwaggerCustomOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
+import passport from 'passport';
 import { AppModule } from './app.module';
 import { EnvConfig } from './core/config/models/env.config';
 import { PrismaService } from './core/data/prisma/prisma.service';
 import { LogService } from './core/log/log.service';
 
 import * as packageJson from '../package.json';
+import helmet from 'helmet';
 
 let port;
 let env;
 let appUrl;
 let logger;
+
+const configureSecurity = (app: INestApplication) => {
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.use(
+    helmet({
+      contentSecurityPolicy:
+        process.env.NODE_ENV === 'production' ? undefined : false,
+    }),
+  );
+};
 
 const configureLogger = async (app: INestApplication) => {
   logger = await app.resolve(LogService);
@@ -62,6 +75,8 @@ async function bootstrap() {
   const envConfig = configService.get<EnvConfig>('env');
   port = envConfig.port;
   env = envConfig.env;
+
+  await configureSecurity(app);
 
   // handle prisma shutdown
   const prismaService: PrismaService = app.get(PrismaService);
