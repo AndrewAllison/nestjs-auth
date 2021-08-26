@@ -1,4 +1,8 @@
-import { INestApplication } from '@nestjs/common';
+import {
+  INestApplication,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import {
@@ -62,6 +66,21 @@ async function bootstrap() {
   // handle prisma shutdown
   const prismaService: PrismaService = app.get(PrismaService);
   await prismaService.enableShutdownHooks(app);
+
+  // Validation
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: false,
+      forbidUnknownValues: true,
+      validationError: { value: false },
+    }),
+  );
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
 
   await app.listen(port);
   appUrl = await app.getUrl();

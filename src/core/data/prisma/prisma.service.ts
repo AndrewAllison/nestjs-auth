@@ -1,10 +1,4 @@
-import {
-  INestApplication,
-  Injectable,
-  OnModuleInit,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  OnModuleDestroy,
-} from '@nestjs/common';
+import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()

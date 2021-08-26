@@ -19,6 +19,19 @@ model User {
   mobileNumber    String?
 
   providers       Provider[]
+  roles           Role[]
+
+  createdAt       DateTime        @default(now())
+  modifiedAt      DateTime        @default(now())
+}
+
+model Role {
+  id              String   @id @default(uuid())
+
+  name            String
+  description     String
+
+  users           User[]
 
   createdAt       DateTime        @default(now())
   modifiedAt      DateTime        @default(now())

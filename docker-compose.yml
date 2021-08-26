@@ -6,8 +6,8 @@ services:
     volumes:
       - seq:/data
     ports:
-      - '8082:80' # exposes ui ports
-      - '5344:5341' # handles ingestion http end-point
+      - '8080:80' # exposes ui ports
+      - '5341:5341' # handles ingestion http end-point
     image: 'datalust/seq:latest'
   mongo:
     image: mongo
