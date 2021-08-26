@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { anyString } from 'jest-mock-extended';
-import { v4 as uuid } from 'uuid';
 import { userEntityValid } from '../../__testing__/data/user-entity.valid';
 import {
   mockedHashValue,
@@ -10,10 +9,11 @@ import {
 import { mockPrismaService } from '../../__testing__/mocks/prisma-service.mock';
 import { PrismaService } from '../../core/data/prisma/prisma.service';
 import { AUTH_PROVIDERS } from '../models/provider.types';
+import { ProviderCreateInput } from '../models/requests/provider-create.input';
 import { PasswordService } from './password.service';
-import { ProviderDetails, RegistrationService } from './registration.service';
+import { RegistrationService } from './registration.service';
 
-describe('UserService', () => {
+describe('RegistrationService', () => {
   let service: RegistrationService;
 
   beforeEach(async () => {
@@ -38,13 +38,15 @@ describe('UserService', () => {
     expect(service).toBeDefined();
   });
   describe('register', () => {
-    it('should register a new user with some info', () => {
-      const createInstance = jest.spyOn(mockPrismaService.user, 'create');
+    it('should register a new user with some info', async () => {
+      const createInstance = jest
+        .spyOn(mockPrismaService.user, 'create')
+        .mockReturnValue(userEntityValid);
       const passwordSpy = jest
         .spyOn(mockPasswordService, 'createPasswordHash')
         .mockReturnValue({ hash: mockedHashValue, salt: mockedSalt });
 
-      service.register({
+      const result = await service.register({
         firstName: 'Harry',
         lastName: 'Potter',
         email: 'hp1@hogwartz.edu.org',
@@ -79,6 +81,7 @@ describe('UserService', () => {
           roles: true,
         },
       });
+      expect(result.displayName).toEqual('The Chosen One');
     });
     it('should make sure info is trimmed info', async () => {
       const createInstance = jest
@@ -129,7 +132,7 @@ describe('UserService', () => {
 
   describe('createProviderDetails', () => {
     it('should default to emailAndPassword if the origin is not present', () => {
-      const providerDetails: ProviderDetails = {
+      const providerDetails: ProviderCreateInput = {
         email: 'hp1@hogwartz.edu.org',
         token: '2348790876342',
       };

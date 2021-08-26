@@ -3,7 +3,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { Mapper } from './mapper.service';
 
 @Module({
-  providers: [PrismaService, Mapper],
+  providers: [PrismaService],
   exports: [PrismaService],
 })
 export class DataModule {}

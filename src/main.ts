@@ -82,6 +82,8 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
 
+  app.enableCors();
+
   await app.listen(port);
   appUrl = await app.getUrl();
   logger.debug({ port, env, appUrl: app.getUrl() }, '[Startup] environment');

@@ -1,7 +1,7 @@
 import { Body, Controller, HttpStatus, Post, Version } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserRegistrationInput } from '../models/requests/create-registration.input';
 import { UserProfileDto } from '../models/dtos/user-profile.dto';
+import { RegisterUserInput } from '../models/requests/register-user.input';
 import { RegistrationService } from '../services/registration.service';
 
 /**
@@ -23,7 +23,7 @@ export class RegistrationController {
   @Version('1')
   @Post('register')
   public async register(
-    @Body() registrationDetails: UserRegistrationInput,
+    @Body() registrationDetails: RegisterUserInput,
   ): Promise<UserProfileDto> {
     return this.userService.register(registrationDetails);
   }

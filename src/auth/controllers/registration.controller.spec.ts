@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'jest-mock-extended';
 import { userEntityValid } from '../../__testing__/data/user-entity.valid';
 import { UserProfileDto } from '../models/dtos/user-profile.dto';
-import { CreateRegistrationInput } from '../models/requests/create-registration.input';
+import { UserCreateInput } from '../models/requests/user-create.input';
 import { RegistrationService } from '../services/registration.service';
 import { UserMapper } from '../services/user-mapper.service';
 import { RegistrationController } from './registration.controller';
@@ -31,7 +31,7 @@ describe('UserController', () => {
   });
   describe('register', () => {
     it('should allow a user to register with the correct details', async () => {
-      const registrationDetails: CreateRegistrationInput = {
+      const registrationDetails: UserCreateInput = {
         firstName: 'Harry',
         lastName: 'Potter',
         email: 'hp1@hogwarts.edu.org',

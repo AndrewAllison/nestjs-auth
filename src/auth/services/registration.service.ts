@@ -2,18 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { PrismaService } from '../../core/data/prisma/prisma.service';
 import { AUTH_PROVIDERS } from '../models/provider.types';
-import {
-  CreateRegistrationInput,
-  UserRegistrationInput,
-} from '../models/requests/create-registration.input';
+import { ProviderCreateInput } from '../models/requests/provider-create.input';
+import { RegisterUserInput } from '../models/requests/register-user.input';
 import { PasswordService } from './password.service';
 import { UserMapper } from './user-mapper.service';
-
-export type ProviderDetails = {
-  email: string;
-  origin?: string;
-  token: string;
-};
 
 export const DEFAULT_ROLES = ['User'];
 
@@ -29,7 +21,7 @@ export class RegistrationService {
     lastName,
     email,
     password,
-  }: UserRegistrationInput) {
+  }: RegisterUserInput) {
     const createData = {
       id: uuid(),
       firstName: firstName.trim(),
@@ -66,7 +58,7 @@ export class RegistrationService {
     email,
     origin = AUTH_PROVIDERS.EMAIL,
     token,
-  }: ProviderDetails) {
+  }: ProviderCreateInput) {
     const providerDetails = {
       email: email.trim().toLowerCase(),
       token: token,

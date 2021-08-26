@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsIn, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
-export class UserRegistrationInput {
+/**
+ * Contains the properties required to register a new user via public end points
+ */
+export class RegisterUserInput {
   @ApiProperty({
     example: 'Harry',
   })
@@ -27,24 +30,4 @@ export class UserRegistrationInput {
   })
   @IsNotEmpty()
   password?: string;
-}
-
-export class CreateRegistrationInput extends UserRegistrationInput {
-  @ApiProperty({
-    nullable: true,
-    example: 'The Chosen One',
-  })
-  displayName: string;
-
-  @ApiProperty({
-    nullable: true,
-    example: '123-5678-9876',
-  })
-  id?: string;
-
-  @ApiProperty({
-    example: 'emailAndPassword',
-  })
-  @IsIn(['emailAndPassword', 'facebook'])
-  roles?: string[];
 }
