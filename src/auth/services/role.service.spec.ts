@@ -1,19 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { mockCryptoService } from '../../__testing__/mocks/crypto-service.mock';
 import { mockLogService } from '../../__testing__/mocks/log-service.mock';
 import { mockPrismaService } from '../../__testing__/mocks/prisma-service.mock';
 import { PrismaService } from '../../core/data/prisma/prisma.service';
 import { LogService } from '../../core/log/log.service';
-import { CryptoService } from './crypto.service';
-import { PasswordService } from './password.service';
+import { RoleService } from './role.service';
 
-describe('PasswordService', () => {
-  let service: PasswordService;
+describe('RolesService', () => {
+  let service: RoleService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PasswordService,
+        RoleService,
         {
           provide: PrismaService,
           useValue: mockPrismaService,
@@ -22,14 +20,10 @@ describe('PasswordService', () => {
           provide: LogService,
           useValue: mockLogService,
         },
-        {
-          provide: CryptoService,
-          useValue: mockCryptoService,
-        },
       ],
     }).compile();
 
-    service = module.get<PasswordService>(PasswordService);
+    service = module.get<RoleService>(RoleService);
   });
 
   it('should be defined', () => {

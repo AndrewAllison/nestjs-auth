@@ -22,6 +22,15 @@ services:
       - .env.postgres # configure postgres
     volumes:
       - authdb-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+  redis:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+  rcli:
+    image: redis:latest
+    links:
+      - redis
+    command: redis-cli -h redis
 volumes:
   authdb-data: # named volumes can be managed easier using docker-compose
   seq:

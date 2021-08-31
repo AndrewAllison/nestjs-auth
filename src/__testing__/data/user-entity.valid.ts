@@ -1,5 +1,5 @@
-import { UserEntity } from '../../auth/models/entities/user.entity';
-import { AUTH_PROVIDERS } from '../../auth/models/provider.types';
+import { AUTH_PROVIDERS } from '../../auth/consts/provider.types';
+import { UserDetails } from '../../auth/models/user';
 
 export const userEntityValid = {
   id: '123-456-789',
@@ -29,4 +29,4 @@ export const userEntityValid = {
       modifiedAt: new Date(1991, 9, 1),
     },
   ],
-} as UserEntity;
+} as UserDetails;

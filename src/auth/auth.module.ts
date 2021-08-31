@@ -6,14 +6,18 @@ import { JwtConfig } from '../core/config/jwt.config';
 import { CoreModule } from '../core/core.module';
 import { RegistrationController } from './controllers/registration.controller';
 import { UsersController } from './controllers/users.controller';
-import { PasswordService } from './services/password.service';
+import { CryptoService } from './services/crypto.service';
 import { RegistrationService } from './services/registration.service';
 import { UserMapper } from './services/user-mapper.service';
-import { UsersService } from './services/users.service';
+import { UserService } from './services/user.service';
 import { JwtStrategy } from './strategies/jwt.stratergy';
+import { LoginController } from './controllers/login.controller';
+import { LoginService } from './services/login.service';
+import { RoleService } from './services/role.service';
+import { PasswordService } from './services/password.service';
 
 @Module({
-  controllers: [RegistrationController, UsersController],
+  controllers: [RegistrationController, UsersController, LoginController],
   exports: [PassportModule],
   imports: [
     CoreModule,
@@ -36,10 +40,13 @@ import { JwtStrategy } from './strategies/jwt.stratergy';
   ],
   providers: [
     JwtStrategy,
-    PasswordService,
+    CryptoService,
     RegistrationService,
     UserMapper,
-    UsersService,
+    UserService,
+    LoginService,
+    RoleService,
+    PasswordService,
   ],
 })
 export class AuthModule {}

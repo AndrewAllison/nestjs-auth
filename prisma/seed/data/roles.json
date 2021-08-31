@@ -1,0 +1,22 @@
+[
+  {
+    "name": "UberAdmin",
+    "description": "Administrative User",
+    "permissions": [
+      "Users.Create",
+      "Users.View.All",
+      "Users.Update",
+      "Users.Password.Reset"
+    ]
+  },
+  {
+    "name": "TrustManager",
+    "description": "Some one appointed to manage a trust.",
+    "permissions": []
+  },
+  {
+    "name": "User",
+    "description": "Base user for anyone signed up to the platform.",
+    "permissions": []
+  }
+]

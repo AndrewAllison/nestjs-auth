@@ -8,9 +8,7 @@ import {
 } from '../../__testing__/mocks/password-service.mock';
 import { mockPrismaService } from '../../__testing__/mocks/prisma-service.mock';
 import { PrismaService } from '../../core/data/prisma/prisma.service';
-import { AUTH_PROVIDERS } from '../models/provider.types';
-import { ProviderCreateInput } from '../models/requests/provider-create.input';
-import { PasswordService } from './password.service';
+import { CryptoService } from './crypto.service';
 import { RegistrationService } from './registration.service';
 
 describe('RegistrationService', () => {
@@ -25,7 +23,7 @@ describe('RegistrationService', () => {
           useValue: mockPrismaService,
         },
         {
-          provide: PasswordService,
+          provide: CryptoService,
           useValue: mockPasswordService,
         },
       ],
@@ -81,7 +79,7 @@ describe('RegistrationService', () => {
           roles: true,
         },
       });
-      expect(result.displayName).toEqual('The Chosen One');
+      expect(result.payload.displayName).toEqual('The Chosen One');
     });
     it('should make sure info is trimmed info', async () => {
       const createInstance = jest
@@ -127,38 +125,6 @@ describe('RegistrationService', () => {
 
       expect(passwordSpy).toHaveBeenLastCalledWith('12345678');
       expect(createInstance).toHaveBeenLastCalledWith(expectedToCallWith);
-    });
-  });
-
-  describe('createProviderDetails', () => {
-    it('should default to emailAndPassword if the origin is not present', () => {
-      const providerDetails: ProviderCreateInput = {
-        email: 'hp1@hogwartz.edu.org',
-        token: '2348790876342',
-      };
-      const result = service.createProviderDetails(providerDetails);
-      expect(result.provider).toEqual(AUTH_PROVIDERS.EMAIL);
-    });
-  });
-
-  describe('determineRolestoAdd', () => {
-    it('should return connector array', () => {
-      const roles = ['User', 'Admin'];
-      const expectedResult = [{ name: 'User' }, { name: 'Admin' }];
-      const result = service.determineRolestoAdd(roles);
-      expect(result).toEqual(expectedResult);
-    });
-    it('should return default user array if roles is empty', () => {
-      const roles = [];
-      const expectedResult = [{ name: 'User' }];
-      const result = service.determineRolestoAdd(roles);
-      expect(result).toEqual(expectedResult);
-    });
-    it('should return default user array if roles is undefined', () => {
-      const roles = undefined;
-      const expectedResult = [{ name: 'User' }];
-      const result = service.determineRolestoAdd(roles);
-      expect(result).toEqual(expectedResult);
     });
   });
 });

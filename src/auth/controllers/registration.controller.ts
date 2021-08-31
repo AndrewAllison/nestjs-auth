@@ -1,14 +1,27 @@
-import { Body, Controller, HttpStatus, Post, Version } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  HttpStatus,
+  Post,
+  Version,
+} from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserProfileDto } from '../models/dtos/user-profile.dto';
-import { RegisterUserInput } from '../models/requests/register-user.input';
+import { UserRegisterInput } from '../models/requests/user-register.input';
+import { UserDetailsWithRoles } from '../models/user';
 import { RegistrationService } from '../services/registration.service';
+
+export class RegisterResponse {
+  success: boolean;
+  payload?: UserDetailsWithRoles;
+  error?: any;
+}
 
 /**
  * Controller dealing with user related functions such as registration
  */
-@ApiTags('User')
-@Controller('user')
+@ApiTags('Registration')
+@Controller('register')
 export class RegistrationController {
   constructor(private readonly userService: RegistrationService) {}
 
@@ -21,10 +34,14 @@ export class RegistrationController {
     description: 'Creates a new user from the registration details',
   })
   @Version('1')
-  @Post('register')
+  @Post('user')
   public async register(
-    @Body() registrationDetails: RegisterUserInput,
-  ): Promise<UserProfileDto> {
-    return this.userService.register(registrationDetails);
+    @Body() registrationDetails: UserRegisterInput,
+  ): Promise<RegisterResponse | { error: any }> {
+    const result = await this.userService.register(registrationDetails);
+    if (!result.error) {
+      return result;
+    }
+    throw new BadRequestException(result.error);
   }
 }

@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { userEntityValid } from '../../__testing__/data/user-entity.valid';
-import { UserProfileDto } from '../models/dtos/user-profile.dto';
-import { AUTH_PROVIDERS } from '../models/provider.types';
+import { AUTH_PROVIDERS } from '../consts/provider.types';
 import { UserMapper } from './user-mapper.service';
 
 describe('UserMapperService', () => {
@@ -32,9 +31,9 @@ describe('UserMapperService', () => {
         modifiedAt: new Date(1991, 9, 1),
         roles: ['User'],
         providers: [AUTH_PROVIDERS.EMAIL],
-      } as UserProfileDto;
+      };
 
-      const result = UserMapper.toDto(userEntity);
+      const result = UserMapper.flattern(userEntity);
 
       expect(result).toEqual(expectedDTO);
     });

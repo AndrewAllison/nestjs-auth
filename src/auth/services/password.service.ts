@@ -1,62 +1,103 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcryptjs';
-import { randomBytes } from 'crypto';
-// import { randomBytes } from 'crypto';
+import { v4 as uuid } from 'uuid';
+import { PrismaService } from '../../core/data/prisma/prisma.service';
+import { LogService } from '../../core/log/log.service';
+import { AUTH_PROVIDERS } from '../consts/provider.types';
+import { CryptoService } from './crypto.service';
 
-/**
- * Service for dealing with passwords and some general crypto functions relating to authentication
- */
 @Injectable()
 export class PasswordService {
-  /**
-   * Creates a hash and salt from a password
-   * @param password {string} the password to hash
-   */
-  createPasswordHash = (password: string) => {
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(`${password}${salt}`, salt);
-    return { salt, hash };
-  };
-  /**
-   * Validates a password against the given parameters
-   * @param password {string} The password to be validated
-   * @param hashedPassword The hased version of the password stored usually in the database
-   * @param salt The salt used by the hashing algorythem
-   * @return {boolean} true if valid else false
-   */
-  validatePassword = (
-    password: string,
-    hashedPassword: string,
-    salt: string,
-  ) => {
-    return bcrypt.compareSync(`${password}${salt}`, hashedPassword);
-  };
-  /**
-   * Generates a set of random bytes to specified length
-   * @param size {number} indicates the size of the bytes to be used in the generation
-   */
-  createRandomCode(size: number) {
-    return randomBytes(size).toString('hex');
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly crypto: CryptoService,
+    private readonly logger: LogService,
+  ) {
+    this.logger.setContext(PasswordService.name);
   }
 
-  /**
-   * Creates a random set of digits to be used in things like MFA and validations
-   * @param digits {number} The amount of digits that will be produced
-   */
-  createRandomDigits(digits: number) {
-    const add = 1;
-    // 12 is the min safe number Math.random() can generate without it starting to pad the end with zeros.
-    let max = 12 - add;
-    if (digits > max) {
-      return (
-        this.createRandomDigits(max) + this.createRandomDigits(digits - max)
-      );
+  async setUserPassword(email: string, password: string) {
+    const existingUser = await this.findUser(email);
+
+    if (!existingUser) {
+      throw Error('User not found');
     }
 
-    max = Math.pow(10, digits + add);
-    const min = max / 10; // Math.pow(10, digits) basically
-    const number = Math.floor(Math.random() * (max - min + 1)) + min;
+    const existingProvider = await this.findPasswordProvider(existingUser);
 
-    return ('' + number).substring(add);
+    const { hash, salt } = this.crypto.createPasswordHash(password);
+
+    try {
+      await this.prisma.$transaction([
+        this.prisma.user.update({
+          data: {
+            password: hash,
+            modifiedAt: new Date(),
+          },
+          where: {
+            email,
+          },
+        }),
+        this.prisma.provider.upsert({
+          create: {
+            userId: existingUser.id,
+            email,
+            token: salt,
+            provider: AUTH_PROVIDERS.EMAIL,
+          },
+          update: {
+            token: salt,
+            modifiedAt: new Date(),
+          },
+          where: {
+            id: existingProvider?.id || uuid(),
+          },
+        }),
+      ]);
+
+      return { success: true, payload: {} };
+    } catch (e) {
+      this.logger.error({ stack: e, action: 'reset-password' });
+      return { success: false, error: e };
+    }
+  }
+
+  async validate(email: string, password: string) {
+    const existingUser = await this.findUser(email);
+    const existingProvider = await this.findPasswordProvider(existingUser);
+
+    if (existingUser && existingProvider) {
+      return this.crypto.validatePassword(
+        password,
+        existingUser.password,
+        existingProvider.token,
+      );
+    }
+    return false;
+  }
+
+  private async findPasswordProvider(existingUser) {
+    const existingProvider = await existingUser.providers.filter(
+      (p) => p.provider === AUTH_PROVIDERS.EMAIL,
+    )[0];
+    return existingProvider;
+  }
+
+  private async findUser(email: string) {
+    return this.prisma.user.findUnique({
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        providers: true,
+        _count: {
+          select: {
+            failedLogins: true,
+          },
+        },
+      },
+      where: {
+        email,
+      },
+    });
   }
 }
