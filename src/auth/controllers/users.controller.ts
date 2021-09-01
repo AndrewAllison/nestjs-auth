@@ -8,8 +8,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { ApiTags } from '@nestjs/swagger';
 import { ERROR_CODES } from '../consts/auth-error-codes.consts';
 
 import { Public } from '../decorators/public.decorator';
@@ -26,7 +25,6 @@ export class UsersController {
     private readonly password: PasswordService,
   ) {}
 
-  @Public()
   @Get()
   async findAll(): Promise<UserDetailsWithRoles[]> {
     return this.userService.findMany();
