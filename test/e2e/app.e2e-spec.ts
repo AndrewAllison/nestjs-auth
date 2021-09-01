@@ -7,7 +7,7 @@ dotenv.config({
   path: `.env.${process.env.NODE_ENV || 'local'}`,
 });
 
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../../src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

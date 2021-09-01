@@ -1,5 +1,6 @@
 import pactum from 'pactum';
 import request from 'supertest';
+import config from '../_common/config';
 
 describe('app-controller', () => {
   let spec;
@@ -7,7 +8,7 @@ describe('app-controller', () => {
     spec = pactum.spec();
   });
   it('on request', () => {
-    request(process.env.BASE_URL)
+    request(config.baseUrl)
       .get('/')
       .expect(200)
       .then((response) => {

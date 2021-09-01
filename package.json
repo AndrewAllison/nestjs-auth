@@ -26,11 +26,10 @@
     "test:badges": "npm run test:coverage  && jest-coverage-badges",
     "test:cov": "jest --silent --ci --coverage --coverageReporters=\"text\" --coverageReporters=\"text-summary\"",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "jest --config test/e2e/jest-e2e.json --detectOpenHandles",
     "test:integration": "jest --config ./test/integration/jest-integration.json",
-    "test:integration:local": "dotenv -e .env.test -- jest --config ./test/integration/jest-integration.json",
     "test:acceptance": "npx cucumber-js",
-    "test:acceptance:local": "dotenv -e .env.test -- npx cucumber-js"
+    "test:load": "npx ts-node ./test/load/basics.ts"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -90,6 +89,7 @@
     "jest": "27.0.6",
     "jest-coverage-badges": "^1.1.2",
     "jest-mock-extended": "^2.0.2-beta2",
+    "loadtest": "^5.1.2",
     "pactum": "^3.0.18",
     "prettier": "^2.3.2",
     "prisma": "^2.30.0",
