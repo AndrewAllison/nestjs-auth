@@ -1,12 +1,21 @@
+import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CryptoService } from './crypto.service';
+
+const getCryptoService = () => {
+  const jwtService = new JwtService({
+    secret: 'JustA$ecr£t',
+  });
+  const crypto = new CryptoService(jwtService);
+  return crypto;
+};
 
 describe('CryptoService', () => {
   let service: CryptoService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CryptoService],
+      providers: [{ provide: CryptoService, useValue: getCryptoService() }],
     }).compile();
 
     service = module.get<CryptoService>(CryptoService);
@@ -17,10 +26,10 @@ describe('CryptoService', () => {
   });
   describe('createPasswordHash && validatePassword', () => {
     it('should create a password with hash and salt then validate it.', () => {
-      const passwordService = new CryptoService();
-      const result = passwordService.createPasswordHash('Pa$$20$$££"^&*()');
+      const crypto = getCryptoService();
+      const result = crypto.createPasswordHash('Pa$$20$$££"^&*()');
 
-      const isValid = passwordService.validatePassword(
+      const isValid = crypto.validatePassword(
         'Pa$$20$$££"^&*()',
         result.hash,
         result.salt,
@@ -28,10 +37,10 @@ describe('CryptoService', () => {
       expect(isValid).toEqual(true);
     });
     it('should create a password with hash and salt then return false if it is invalid.', () => {
-      const passwordService = new CryptoService();
-      const result = passwordService.createPasswordHash('Pa$$20$$££"^&*()');
+      const crypto = getCryptoService();
+      const result = crypto.createPasswordHash('Pa$$20$$££"^&*()');
 
-      const isValid = passwordService.validatePassword(
+      const isValid = crypto.validatePassword(
         'Pa$$20$$££"^&*(',
         result.hash,
         result.salt,

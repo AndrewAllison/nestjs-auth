@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
+import { UserMapper } from './user-mapper.service';
+
 // import { randomBytes } from 'crypto';
 
 /**
@@ -8,6 +11,8 @@ import { randomBytes } from 'crypto';
  */
 @Injectable()
 export class CryptoService {
+  constructor(private readonly jwtService: JwtService) {}
+
   /**
    * Creates a hash and salt from a password
    * @param password {string} the password to hash
@@ -31,6 +36,7 @@ export class CryptoService {
   ) => {
     return bcrypt.compareSync(`${password}${salt}`, hashedPassword);
   };
+
   /**
    * Generates a set of random bytes to specified length
    * @param size {number} indicates the size of the bytes to be used in the generation
@@ -59,4 +65,18 @@ export class CryptoService {
 
     return ('' + number).substring(add);
   }
+
+  prepareToken = (user: any) => {
+    const userDto = UserMapper.flattern(user);
+    const payload = {
+      sub: user.id,
+      name: user.displayName,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email.toLowerCase(),
+      currentCentre: user.centreId ? user.centreId : undefined,
+      roles: userDto.roles,
+    };
+    return { accessToken: this.jwtService.sign(payload), profile: userDto };
+  };
 }

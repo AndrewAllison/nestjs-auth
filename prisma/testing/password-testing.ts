@@ -1,3 +1,4 @@
+import { JwtService } from '@nestjs/jwt';
 import { CryptoService } from '../../src/auth/services/crypto.service';
 import { PasswordService } from '../../src/auth/services/password.service';
 import { UserService } from '../../src/auth/services/user.service';
@@ -5,7 +6,10 @@ import { PrismaService } from '../../src/core/data/prisma/prisma.service';
 import { getPinoLogger } from '../../src/core/log/log-utils';
 import { LogService } from '../../src/core/log/log.service';
 
-const crypto = new CryptoService();
+const jwtService = new JwtService({
+  secret: 'JustA$ecr£t',
+});
+const crypto = new CryptoService(jwtService);
 const prisma = new PrismaService();
 const userService = new UserService(prisma);
 const logger = new LogService(getPinoLogger('testing'));

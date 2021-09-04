@@ -2,18 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { mapError } from '../../core/data/prisma/handle-prisma-error';
 import { PrismaService } from '../../core/data/prisma/prisma.service';
+import { ErrorResponse } from '../../core/models/error-response.model';
 import { ERROR_CODES } from '../consts/auth-error-codes.consts';
 import { UserCreateInput } from '../models/requests/user-create.input';
 import { UserDetailsWithRoles } from '../models/user';
 import { USER_SELECT_BASIC } from '../querires';
 import { UserMapper } from './user-mapper.service';
-
-export type ErrorResponse = {
-  error: {
-    code: string;
-    message: string;
-  };
-};
 
 @Injectable()
 export class UserService {
@@ -29,7 +23,7 @@ export class UserService {
     where: Prisma.UserWhereInput = {},
   ): Promise<UserDetailsWithRoles[]> {
     const users = await this.prisma.user.findMany({
-      select: { ...USER_SELECT_BASIC, roles: true },
+      select: { ...USER_SELECT_BASIC, roles: true, providers: true },
       where,
     });
     return users.map((u) => UserMapper.flattern(u));

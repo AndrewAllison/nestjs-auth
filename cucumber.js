@@ -3,6 +3,7 @@ let common = [
   '--require-module ts-node/register', // Load TypeScript module
   '--require test/acceptance/step-definitions/**/*.ts', // Load step definitions
   '--format progress-bar', // Load custom formatter
+  '--publish', // public the features
 ].join(' ');
 
 module.exports = {

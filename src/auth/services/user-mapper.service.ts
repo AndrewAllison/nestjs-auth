@@ -8,7 +8,7 @@ export class UserMapper extends Mapper<User> {
   public static flattern(
     userEntity: User & { roles?: Role[]; providers?: Provider[] },
   ) {
-    const { roles, providers, ...rest } = userEntity;
+    const { roles = [], providers = [], ...rest } = userEntity;
     const mappedRoles = roles.map((r) => r.name);
     const mappedProviders = providers.map((r) => r.provider);
     return {

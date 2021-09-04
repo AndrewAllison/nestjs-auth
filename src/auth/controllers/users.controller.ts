@@ -9,13 +9,14 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { ErrorResponse } from 'src/core/models/error-response.model';
 import { ERROR_CODES } from '../consts/auth-error-codes.consts';
 
 import { Public } from '../decorators/public.decorator';
 import { UserCreateInput } from '../models/requests/user-create.input';
 import { UserDetailsWithRoles } from '../models/user';
 import { PasswordService } from '../services/password.service';
-import { ErrorResponse, UserService } from '../services/user.service';
+import { UserService } from '../services/user.service';
 
 @ApiTags('Users')
 @Controller('users')
