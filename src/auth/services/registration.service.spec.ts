@@ -8,6 +8,7 @@ import {
 } from '../../__testing__/mocks/password-service.mock';
 import { mockPrismaService } from '../../__testing__/mocks/prisma-service.mock';
 import { PrismaService } from '../../core/data/prisma/prisma.service';
+import { UserDetailsWithRoles } from '../models/user';
 import { CryptoService } from './crypto.service';
 import { RegistrationService } from './registration.service';
 
@@ -79,7 +80,9 @@ describe('RegistrationService', () => {
           roles: true,
         },
       });
-      expect(result.payload.displayName).toEqual('The Chosen One');
+      expect((result as UserDetailsWithRoles).displayName).toEqual(
+        'The Chosen One',
+      );
     });
     it('should make sure info is trimmed info', async () => {
       const createInstance = jest

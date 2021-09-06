@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
-import { mapError } from '../../core/data/prisma/handle-prisma-error';
+import { mapError } from '../../core/data/prisma/errors/handle-prisma-error';
 import { PrismaService } from '../../core/data/prisma/prisma.service';
 import { ErrorResponse } from '../../core/models/error-response.model';
 import { ERROR_CODES } from '../consts/auth-error-codes.consts';
@@ -9,16 +9,32 @@ import { UserDetailsWithRoles } from '../models/user';
 import { USER_SELECT_BASIC } from '../querires';
 import { UserMapper } from './user-mapper.service';
 
+/**
+ * Class to deal with all aspects of user management.
+ */
 @Injectable()
 export class UserService {
+  /**
+   * Construsts a new instance of the service
+   * @param prisma {PrismaService} a PrismaService for data interactions
+   */
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Performs acount on the users table.
+   * @param {Prisma.UserWhereInput} where clause based on the user parameters
+   * @returns {Number} the count based on the Where clause
+   */
   async count(where: Prisma.UserWhereInput = {}): Promise<number> {
     return this.prisma.user.count({
       where,
     });
   }
 
+  /**
+   * Returns a list of users based on the give where parameters.
+   * @param { Prisma.UserWhereInput } where Params to determine what is being returned.
+   */
   async findMany(
     where: Prisma.UserWhereInput = {},
   ): Promise<UserDetailsWithRoles[]> {

@@ -1,12 +1,12 @@
 import * as faker from 'faker';
-import { USER_STATUSES } from '../../src/auth/consts';
-import { UserCreateInput } from '../../src/auth/models/requests/user-create.input';
+import { USER_STATUSES } from '../../../src/auth/consts';
+import { UserCreateInput } from '../../../src/auth/models/requests/user-create.input';
 // import { UserCreateRequest } from '../../src/auth/models/requests/user-create.input';
 import {
   countUsers,
   createUser,
   deleteAllUsers,
-} from './functions/user-functions';
+} from '../../_common/user-functions';
 
 const main = async () => {
   const create = new Promise(async (resolve, reject) => {

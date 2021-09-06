@@ -11,6 +11,10 @@ import { UserMapper } from './user-mapper.service';
  */
 @Injectable()
 export class CryptoService {
+  /**
+   * Creates an instance of the class with the desired dependancies.
+   * @param {JwtService} jwtService handle jwt and token actions
+   */
   constructor(private readonly jwtService: JwtService) {}
 
   /**
