@@ -1,0 +1,48 @@
+type Query {
+    profile: UserProfile
+}
+
+type Mutation {
+    "Used as the first part of the login process, provides a code to be exchanged for an auth token"
+    authorize(authorizeData: LoginRequest): AuthorizeResponse
+    "Register a new user with the given details"
+    register(registrationData: RegisterUserInput): AuthorizeResponse
+    "Exchange code and uic for accessToken"
+    token(tokenRequest: TokenRequest): TokenResponse
+}
+
+input LoginRequest {
+    email: String
+    password: String
+}
+
+type AuthorizeResponse {
+    code: String
+    uic: String
+}
+
+type UserProfile {
+    id: ID!
+    firstName: String
+    lastName: String
+    displayName: String
+    email: String
+}
+
+type TokenResponse {
+    profile: UserProfile
+    accessToken: String
+}
+
+"User registration input"
+input RegisterUserInput {
+    firstName: String
+    lastName: String
+    email: String
+    password: String
+}
+
+input TokenRequest {
+    code: String
+    uic: String
+}

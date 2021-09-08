@@ -90,6 +90,27 @@ export class UserService {
             },
           },
         }),
+        this.prisma.loginAttempt.deleteMany({
+          where: {
+            userId: {
+              in: userIds,
+            },
+          },
+        }),
+        this.prisma.loginSuccess.deleteMany({
+          where: {
+            userId: {
+              in: userIds,
+            },
+          },
+        }),
+        this.prisma.loginFailed.deleteMany({
+          where: {
+            userId: {
+              in: userIds,
+            },
+          },
+        }),
         this.prisma.user.deleteMany({
           where: {
             id: {

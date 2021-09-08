@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginAttempt, Prisma, User } from '@prisma/client';
 import { DateTime } from 'luxon';
@@ -9,6 +13,7 @@ import { ERROR_CODES } from '../consts/auth-error-codes.consts';
 import { AuthCode } from '../models/auth-code';
 import { checkUserCanTryLogin } from '../functions';
 import { LoginAttemptInput } from '../models/requests/login-attempt.input';
+import { UserDetailsWithRoles } from '../models/user';
 import { CryptoService } from './crypto.service';
 import { PasswordService } from './password.service';
 import { UserMapper } from './user-mapper.service';
@@ -56,6 +61,13 @@ export class LoginService {
     const { email, password } = loginDetails;
     const existingUser = await this.getUserByEmailWithLoginsAndProviders(email);
 
+    if (!existingUser) {
+      return createErrorResponse(
+        ERROR_CODES.INVALID_PASSWORD,
+        'Login failed; Invalid email or password.',
+      );
+    }
+
     if (!checkUserCanTryLogin(existingUser)) {
       // there where too many failed attempts
       return createErrorResponse(
@@ -71,48 +83,71 @@ export class LoginService {
     if (!isValidPassword) {
       return createErrorResponse(
         ERROR_CODES.INVALID_PASSWORD,
-        'The password or email does not match any in our system.',
+        'Login failed; Invalid email or password.',
       );
     }
 
     try {
-      const code = this.crypto.createRandomCode(32);
-      const { hash, salt } = this.crypto.createPasswordHash(code);
-
-      await this.prisma.loginAttempt.create({
-        data: {
-          id: uuid(),
-          code: hash,
-          exchange: salt,
-          ip,
-          expiresAt: DateTime.now().plus({ days: 1 }).toJSDate(),
-          user: {
-            connect: {
-              email: email ? email.toLowerCase() : undefined,
-            },
-          },
-        },
-      });
-
-      return {
-        code,
-        uic: existingUser.id,
-      };
+      return this.createLoginAttempt(existingUser, ip);
     } catch (e) {
       return createErrorResponse(ERROR_CODES.LOGIN_FAILED, e.message);
     }
   };
 
-  exchangeCodeForToken = async (uic, code, ip = '127.0.0.1') => {
-    const validUser = await this.validateLoginAttempt({ code, userId: uic });
-    if (validUser instanceof ErrorResponse)
-      throw new UnauthorizedException(validUser.error);
+  createLoginAttempt = async (
+    user: { email: string; id: string },
+    ip = '127.0.0.1',
+  ) => {
+    const { email } = user;
+    const code = this.crypto.createRandomCode(32);
+    const { hash, salt } = this.crypto.createPasswordHash(code);
+
+    await this.prisma.loginAttempt.create({
+      data: {
+        id: uuid(),
+        code: hash,
+        exchange: salt,
+        ip,
+        expiresAt: DateTime.now().plus({ days: 1 }).toJSDate(),
+        user: {
+          connect: {
+            email: email ? email.toLowerCase() : undefined,
+          },
+        },
+      },
+    });
+
+    return {
+      code,
+      uic: user.id,
+    };
+  };
+
+  exchangeCodeForToken = async (
+    uic,
+    code,
+    ip = '127.0.0.1',
+  ): Promise<
+    { profile: UserDetailsWithRoles; accessToken: string } | ErrorResponse
+  > => {
+    const validatedUser = await this.validateLoginAttempt({
+      code,
+      userId: uic,
+    });
+    if ((validatedUser as ErrorResponse).error)
+      throw new BadRequestException(
+        (validatedUser as ErrorResponse).error.message,
+      );
 
     await this.cleanUpLoginAttempts(uic, ip);
 
-    return this.crypto.prepareToken(validUser);
+    return this.crypto.prepareToken(validatedUser);
   };
 
+  /**
+   * Attempts to validate a user code as part of the authentication request.
+   * @param params code and uic from the onetime authntication request.
+   */
   validateLoginAttempt = async (params: {
     code: any;
     userId: any;
@@ -136,7 +171,7 @@ export class LoginService {
     return createErrorResponse(
       ERROR_CODES.AUTH_EXCHANGE_FAILED,
       'Code exchane failed, there is possibly an invalid or expired auth code.',
-    );
+    ) as ErrorResponse;
   };
 
   private async cleanUpLoginAttempts(uic, ip: string) {

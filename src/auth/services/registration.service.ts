@@ -58,7 +58,7 @@ export class RegistrationService {
       });
       return UserMapper.flattern(userEntity);
     } catch (e) {
-      this.logger.error({ acrion: 'user-registration', stackTrace: e });
+      this.logger.error({ action: 'user-registration', stackTrace: e });
       return { error: mapError(e, 'Register') };
     }
   }

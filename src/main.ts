@@ -1,6 +1,6 @@
 import {
   INestApplication,
-  ValidationPipe,
+  // ValidationPipe,
   VersioningType,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -83,15 +83,15 @@ async function bootstrap() {
   await prismaService.enableShutdownHooks(app);
 
   // Validation
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: false,
-      forbidUnknownValues: true,
-      validationError: { value: false },
-    }),
-  );
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     transform: true,
+  //     whitelist: true,
+  //     forbidNonWhitelisted: false,
+  //     forbidUnknownValues: true,
+  //     validationError: { value: false },
+  //   }),
+  // );
 
   app.enableVersioning({
     type: VersioningType.URI,
