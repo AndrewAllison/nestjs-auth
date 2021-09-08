@@ -5,9 +5,7 @@ import { getPinoLogger } from '../src/core/log/log-utils';
 import { LogService } from '../src/core/log/log.service';
 import { importRoles } from './seed/roles.seed';
 
-dotenv.config({
-  path: `./.env.${process.env.NODE_ENV || 'local'}`,
-});
+dotenv.config();
 
 const service = new PrismaService();
 // const passwordService = new PasswordService();
