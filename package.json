@@ -7,51 +7,93 @@
   "license": "GNU GPLv3",
   "scripts": {
     "prebuild": "rimraf dist",
+    "prepare": "husky install",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev:local": "dotenv -e .env.local -- nest start --watch",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
+    "prisma:db:push": "dotenv -e .env.local -- prisma db push",
+    "prisma:generate": "dotenv -e .env.local -- prisma generate",
+    "prisma:seed": "dotenv -e .env.local -- npx ts-node prisma/seed.ts",
+    "password-test": "dotenv -e .env.local -- npx ts-node test/integration/auth/password-testing.ts",
+    "user-test": "dotenv -e .env.local -- npx ts-node test/integration/auth/user-testing.ts",
+    "test": "jest --ci --detectOpenHandles",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test:badges": "npm run test:coverage  && jest-coverage-badges",
+    "test:cov": "jest --silent --ci --coverage --coverageReporters=\"text\" --coverageReporters=\"text-summary\"",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config test/e2e/jest-e2e.json --detectOpenHandles",
+    "test:integration:local": "dotenv -e .env.test -- prisma db push && jest --config ./test/integration/jest-integration.json --detectOpenHandles",
+    "test:acceptance": "npx cucumber-js",
+    "test:load": "npx ts-node ./test/load/basics.ts"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.0.1",
     "@nestjs/core": "^8.0.0",
+    "@nestjs/event-emitter": "^1.0.0",
+    "@nestjs/jwt": "^8.0.0",
+    "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/swagger": "^5.0.9",
+    "@nestjs/terminus": "^7.2.0",
+    "@prisma/client": "^2.30.3",
+    "bcryptjs": "^2.4.3",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
     "dotenv-cli": "^4.0.0",
+    "faker": "^5.5.3",
+    "helmet": "^4.6.0",
     "joi": "^17.4.2",
+    "jwks-rsa": "^2.0.4",
+    "luxon": "^2.0.2",
     "nestjs-pino": "^1.4.0",
     "nestjs-real-ip": "^2.0.0",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
     "pino-seq": "^0.8.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^13.1.0",
+    "@compodoc/compodoc": "^1.1.14",
+    "@cucumber/cucumber": "^7.3.1",
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
     "@types/express": "^4.17.13",
+    "@types/faker": "^5.5.8",
+    "@types/helmet": "^4.0.0",
     "@types/jest": "^27.0.1",
-    "@types/node": "^16.0.0",
+    "@types/luxon": "^2.0.2",
+    "@types/node": "^15.12.2",
+    "@types/passport": "^1.0.7",
+    "@types/passport-jwt": "^3.0.6",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^4.28.2",
     "@typescript-eslint/parser": "^4.28.2",
     "commitizen": "4.2.4",
+    "commitlint": "^13.1.0",
+    "cucumber-pretty": "^6.0.0",
+    "cucumber-tsflow": "^4.0.0-preview.7",
+    "cz-conventional-changelog": "^3.3.0",
     "cz-emoji": "1.3.1",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^7.0.1",
     "jest": "27.0.6",
+    "jest-coverage-badges": "^1.1.2",
+    "jest-mock-extended": "^2.0.2-beta2",
+    "loadtest": "^5.1.2",
+    "pactum": "^3.0.18",
     "prettier": "^2.3.2",
+    "prisma": "^2.30.3",
     "supertest": "^6.1.3",
     "ts-jest": "^27.0.3",
     "ts-loader": "^9.2.3",
@@ -70,15 +112,28 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "collectCoverage": true,
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+    "coveragePathIgnorePatterns": [
+      "main.ts",
+      ".mock.ts",
+      ".module.ts",
+      "log-utils.ts",
+      "/config"
+    ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coverageReporters": [
+      "json-summary",
+      "text",
+      "lcov"
+    ]
   },
   "config": {
     "commitizen": {
-      "path": "cz-emoji"
+      "path": "./node_modules/cz-conventional-changelog"
     }
   }
 }

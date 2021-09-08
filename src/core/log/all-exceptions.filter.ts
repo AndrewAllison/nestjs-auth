@@ -9,7 +9,9 @@ import { LogService } from './log.service';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  private readonly logger = new LogService('GlobalException');
+  constructor(private readonly logger: LogService) {
+    this.logger.setContext('AllExceptionFilter');
+  }
 
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -37,7 +39,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       };
 
       return response.status(status).json({
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
         path: pathName,
         error: errorObject,
       });

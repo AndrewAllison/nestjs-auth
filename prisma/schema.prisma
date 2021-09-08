@@ -1,0 +1,91 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["orderByRelation", "orderByAggregateGroup", "selectRelationCount", "filterJson"]
+}
+
+model User {
+  id           String  @id @default(uuid())
+  firstName    String
+  lastName     String
+  displayName  String
+  email        String  @unique
+  /// @HideField()
+  password     String?
+  mobileNumber String?
+
+  status String @default("active")
+
+  providers Provider[]
+  roles     Role[]
+
+  loginAttempts     LoginAttempt[]
+  failedLogins      LoginFailed[]
+  successfullLogins LoginSuccess[]
+
+  createdAt  DateTime @default(now())
+  modifiedAt DateTime @default(now())
+}
+
+model LoginAttempt {
+  id         String   @id @default(uuid())
+  /// @HideField()
+  code       String   @unique
+  /// @HideField()
+  exchange   String
+  ip         String
+  expiresAt  DateTime
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+  modifiedAt DateTime @default(now())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model LoginFailed {
+  id        String   @id @default(uuid())
+  ip        String   @default("127.0.0.1")
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model LoginSuccess {
+  id         String   @id @default(uuid())
+  ip         String   @default("127.0.0.1")
+  createdAt  DateTime @default(now())
+  modifiedAt DateTime @default(now())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model Role {
+  id String @id @default(uuid())
+
+  name        String @unique
+  description String
+
+  users User[]
+
+  createdAt  DateTime @default(now())
+  modifiedAt DateTime @default(now())
+}
+
+model Provider {
+  id       String  @id @default(uuid())
+  email    String
+  provider String
+  token    String? @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt  DateTime @default(now())
+  modifiedAt DateTime @default(now())
+
+  @@unique([userId, provider], name: "Provider_userId_provider_key")
+}

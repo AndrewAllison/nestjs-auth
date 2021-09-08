@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
-import { ConfigModule } from './config/config.module';
-import { LogModule } from './log/log.module';
+import { AuthModule } from './auth/auth.module';
+import { CoreModule } from './core/core.module';
 
 @Module({
-  imports: [ConfigModule, LogModule],
+  imports: [AuthModule, EventEmitterModule.forRoot(), CoreModule],
   controllers: [AppController],
   providers: [],
 })
