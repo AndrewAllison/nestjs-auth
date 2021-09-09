@@ -36,7 +36,7 @@ describe('reistration-service', () => {
     crypto = getCrytoService(jwtService);
     registration = new RegistrationService(prisma, crypto);
     await prisma.$executeRaw('TRUNCATE "User" CASCADE');
-    await importRoles(prisma, `../../../prisma/seed/data/roles.json`);
+    await importRoles(prisma, `../../prisma/seed/data/roles.json`);
   });
   afterAll(async () => {
     await prisma.$executeRaw('TRUNCATE "User" CASCADE');
