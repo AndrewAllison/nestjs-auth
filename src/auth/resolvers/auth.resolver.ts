@@ -1,10 +1,18 @@
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
-import { Args, Field, InputType, Mutation, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Field,
+  InputType,
+  Mutation,
+  Query,
+  Resolver,
+} from '@nestjs/graphql';
 import { IsEmail } from 'class-validator';
-import { TokenResponse } from 'src/graphql';
+import { TokenResponse, UserProfile } from 'src/graphql';
 import { ErrorResponse } from '../../core/models/error-response.model';
 import { UserIp } from '../decorators/ip.decorator';
 import { Public } from '../decorators/public.decorator';
+import { CurrentUser } from '../decorators/user.decorator';
 import { LoginService } from '../services/login.service';
 import { RegistrationService } from '../services/registration.service';
 

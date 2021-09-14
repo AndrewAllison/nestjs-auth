@@ -16,6 +16,7 @@ import { LoginService } from './services/login.service';
 import { RoleService } from './services/role.service';
 import { PasswordService } from './services/password.service';
 import { AuthResolver } from './resolvers/auth.resolver';
+import { ProfileResolver } from './resolvers/profile.resolver';
 
 @Module({
   controllers: [RegistrationController, UsersController, LoginController],
@@ -49,6 +50,7 @@ import { AuthResolver } from './resolvers/auth.resolver';
     RoleService,
     PasswordService,
     AuthResolver,
+    ProfileResolver,
   ],
 })
 export class AuthModule {}
